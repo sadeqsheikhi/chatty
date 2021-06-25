@@ -5,6 +5,11 @@ $(document).ready(function () {
     let sendMessage = $('#send-message')
     let chatBox = $('.msg_card_body')
     let isTyping = $('#is-typing')
+    let logout = $('#logout')
+
+    logout.click(function () {
+        window.location.replace('http://localhost:3000/logout')
+    })
 
 
     sendMessage.click(function () {

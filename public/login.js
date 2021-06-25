@@ -27,6 +27,9 @@
     socket.on('loginRes', data => {
         if (data[0]) {
             window.location.replace('http://localhost:3000')
+        } else {
+            errorBox.show()
+            errorBox.text(data[1].error)
         }
     })
 })()

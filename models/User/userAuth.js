@@ -32,10 +32,7 @@ module.exports = {
 
                 return [true, {
                     id: user.dataValues.id,
-                    fullName: user.dataValues.fullName,
                     userName: user.dataValues.userName,
-                    userType: user.dataValues.userType,
-                    userColor: user.dataValues.userColor,
                 }]
             } else {
                 msg = 'incorrect password'
@@ -50,7 +47,7 @@ module.exports = {
         } else {
             msg = 'username doesn\'t exist'
             return [false, {
-                error: username
+                error: msg
             }]
         }
     },
