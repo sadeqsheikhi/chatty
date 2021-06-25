@@ -30,11 +30,11 @@ exports.User = class User extends Model {
     //     return await showUsr(args.id)
     // }
     //
-    // // update User
-    // static async update(args) {
-    //     const updateUsr = require('./update')
-    //     return await updateUsr(args.id ,args.fullName, args.userName, args.password, args.userType, args.birthDate, args.phoneNumber)
-    // }
+    // update User
+    static async update(args) {
+        const updateUsr = require('./update')
+        return await updateUsr(args.username, args.password, args.profilePic)
+    }
     //
     // // get user info
     // static async getUsers(username) {
@@ -59,6 +59,12 @@ exports.userData = {
             type: DataTypes.STRING,
             allowNull: false
         },
+
+        profilePic: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+            defaultValue: 'user.png'
+        }
     },
     options: {
         "modelName": 'User'

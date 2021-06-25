@@ -7,6 +7,60 @@ $(document).ready(function () {
     let isTyping = $('#is-typing')
     let logout = $('#logout')
 
+    let password = $('#change-password');
+    let passwordRep = $('#change-password-rep');
+    let editButton = $('#editButton')
+    let editError = $('#edit-errorBox')
+    let avatarImg = $('#avatar-img')
+    let avatarSelect = $('#avatar-select')
+    avatarImg.click(function () {
+        avatarSelect.click()
+    })
+    editError.hide()
+
+    editButton.click(function () {
+        let profilePic;
+        if (password.val() === '' || (passwordRep.val() === '' && password.val() === '')) {
+            if (avatarSelect.val()) {
+                profilePic = avatarSelect.val().split("\\")
+                profilePic = profilePic[profilePic.length - 1].split('.');
+                profilePic = profilePic[profilePic.length - 1]
+                profilePic = editButton.attr('username') + '.' + profilePic
+                let data = {
+                    username: editButton.attr('username'),
+                    password: '',
+                    profilePic: profilePic
+                }
+                socket.emit('updateUser', data)
+            }
+
+
+        } else if (password.val().length < 8) {
+            editError.show().text("password should be 8 chars or more")
+
+
+        } else if (password.val() !== passwordRep.val()) {
+            editError.show().text("password and password repeat don't match")
+
+
+        } else {
+            editError.hide()
+            if (avatarSelect.val()) {
+                profilePic = avatarSelect.val().split("\\")
+                profilePic = profilePic[profilePic.length - 1].split('.');
+                profilePic = profilePic[profilePic.length - 1]
+                profilePic = editButton.attr('username') + '.' + profilePic
+            }
+            let data = {
+                username: editButton.attr('username'),
+                password: password.val(),
+                profilePic: profilePic
+            }
+            socket.emit('updateUser', data)
+
+        }
+    })
+
     logout.click(function () {
         window.location.replace('http://localhost:3000/logout')
     })
@@ -51,6 +105,29 @@ $(document).ready(function () {
         setTimeout(() => {
             isTyping.html('')
         }, 800)
+    })
+
+
+    // listening for user update
+    socket.on('updateUserRes', data => {
+        let notif = document.createElement('div')
+        notif.classList.add('alert', 'text-center', 'notification', 'show')
+        if (data[0]) {
+            notif.classList.add('alert-success')
+        } else {
+            notif.classList.add('alert-warning')
+        }
+        notif.setAttribute('role', 'alert')
+        notif.style.zIndex = '34343'
+        notif.innerHTML = `
+            ${data[1]}
+            `
+        $('body').prepend(notif)
+        // remove notification
+        setTimeout(() => {
+            notif.remove()
+        }, 3000)
+
     })
 
 

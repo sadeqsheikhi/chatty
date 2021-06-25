@@ -1,5 +1,47 @@
 <%- include('header') %>
 
+<div id="editUser" class="modal" aria-labelledby="editUserLabel" aria-hidden="true" role="dialog">
+    <div class="container">
+        <div class="row" style="justify-content: center;">
+            <div class="col-lg-4 col-sm-7">
+
+                <div class="card hovercard">
+                    <div class="cardheader">
+
+                    </div>
+                    <div class="avatar">
+                        <img alt="" src="img/<%= username %>.jpeg" id="avatar-img">
+                        <input type="file"
+                               id="avatar-select" name="avatar" class="hidden"
+                               accept="image/png, image/jpeg, image/jpg">
+                    </div>
+                    <div class="info">
+                        <div class="title mb-4">
+                            <a href="#"><%= username %></a>
+                        </div>
+                        <div class="text-left px-3">
+                            Change Your Password
+                        </div>
+                        <div class="input-group px-3">
+                            <input type="password" id="change-password" placeholder="new password" class="form-control my-2 w-100">
+                            <input type="password" id="change-password-rep" placeholder="confirm new password" class="form-control w-100">
+                            <p class="error-box w-100 mt-2" id="edit-errorBox"></p>
+                        </div>
+                        <div class="mt-2 flex-row justify-content-between p-3 w-100">
+                            <button class="btn btn-light" data-dismiss="modal" id="modalClose">
+                                close
+                            </button>
+                            <button class="btn btn-primary" id="editButton"  username="<%= username %>">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <nav class="navbar navbar-dark navbar-expand-md" id="app-navbar">
     <div class="container-fluid">
@@ -15,9 +57,11 @@
         <div class="collapse navbar-collapse" id="navcol-1">
             <ul class="nav navbar-nav ml-auto">
                 <li class="nav-item" role="presentation"></li>
-                <li class="nav-item" role="presentation"><a class="nav-link" href="#"
-                                                            style="color: white;opacity: 1;margin-right: 10px;border-right: 2px solid white;padding-right: 13px;">Sadeq
-                        Sheikhi</a></li>
+                <li class="nav-item" type="button" role="presentation" data-toggle="modal" data-target="#editUser">
+                    <a class="nav-link" href="#" style="color: white;opacity: 1;margin-right: 10px;border-right: 2px solid white;padding-right: 13px;">
+                        <%= username %>
+                    </a>
+                </li>
                 <li class="nav-item" role="presentation" id="logout"><a class="nav-link" href="#">Logout</a></li>
             </ul>
         </div>

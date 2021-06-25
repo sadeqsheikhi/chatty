@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const db = require('./models/Db')
 const http = require('http')
+const siofu = require('socketio-file-upload')
 const session = require('express-session')({
     secret: "hyttrqerufyuv324jfgdhf9834", resave: true, saveUninitialized: true
 })
@@ -17,7 +18,8 @@ activeUsers = []
 // =====================================================================================================================
 // express setup
 // =====================================================================================================================
-app.set('view engine', 'ejs')
+app.set('view engine', 'ejs');
+
 app.use(express.static('public'))
 
 // beware to never get this secret key to anyone
@@ -27,7 +29,7 @@ app.get('/', (req, res) => {
     if (!req.session.user) {
         return res.status(401).redirect('login')
     }
-    return res.status(200).render('index')
+    return res.render('index', {username: req.session.user.userName})
 })
 app.get('/signup', (req, res) => {
     res.render('signup')
@@ -74,9 +76,15 @@ io.on('connection', (socket) => {
         if (res[1].id) {
             socket.handshake.session.user = res[1]
             socket.handshake.session.save()
-            console.log(socket.handshake.session.id)
         }
         socket.emit('loginRes',res)
+    })
+
+    // listen for changing password
+    socket.on('updateUser', async (data) => {
+        let res = await db().sequelize.models.User.update(data)
+        console.log('updating user', res)
+        socket.emit('updateUserRes', res)
     })
 
     // listen on new_message
@@ -96,5 +104,7 @@ io.on('connection', (socket) => {
         let res = await db().sequelize.models.User.add({username: data.username, password: data.password})
         socket.emit('signupRes', res)
     })
+
+
 
 })
