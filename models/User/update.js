@@ -35,10 +35,10 @@ module.exports = async (username, password, profilePic) => {
         // if username already exists updated with new value
         if (check === null){
             let pass
-            if (password) {
+            if (!profilePic) {
                 bcrypt.hash(password, 10,  async (err, hash) => {
                     pass = hash
-                    await user.update({userName: username, password: pass, profilePic: profilePic})
+                    await user.update({userName: username, password: pass})
                 })
             } else {
                 pass = user.password
@@ -47,7 +47,7 @@ module.exports = async (username, password, profilePic) => {
 
             const msg = 'updated user successfully'
             console.log(msg)
-            return [true, msg]
+            return [true, msg, profilePic]
 
         } else {
             // else show already exist message

@@ -1,6 +1,4 @@
 $(document).ready(function () {
-    let socket = io.connect('http://localhost:3000')
-
     let message = $('#message')
     let sendMessage = $('#send-message')
     let chatBox = $('.msg_card_body')
@@ -13,6 +11,22 @@ $(document).ready(function () {
     let editError = $('#edit-errorBox')
     let avatarImg = $('#avatar-img')
     let avatarSelect = $('#avatar-select')
+    let editUser = $('#editUser')
+
+    let socket = io.connect('http://localhost:3000')
+
+    let uploader = new SocketIOFileUpload(socket);
+    uploader.listenOnInput(document.getElementById('avatar-select'))
+    uploader.addEventListener('complete', (e) => {
+        let data = {
+            username: editButton.attr('username'),
+            password: '',
+            profilePic: e.file.name
+        }
+        socket.emit('updateUser', data)
+    })
+
+
     avatarImg.click(function () {
         avatarSelect.click()
     })
@@ -21,19 +35,7 @@ $(document).ready(function () {
     editButton.click(function () {
         let profilePic;
         if (password.val() === '' || (passwordRep.val() === '' && password.val() === '')) {
-            if (avatarSelect.val()) {
-                profilePic = avatarSelect.val().split("\\")
-                profilePic = profilePic[profilePic.length - 1].split('.');
-                profilePic = profilePic[profilePic.length - 1]
-                profilePic = editButton.attr('username') + '.' + profilePic
-                let data = {
-                    username: editButton.attr('username'),
-                    password: '',
-                    profilePic: profilePic
-                }
-                socket.emit('updateUser', data)
-            }
-
+            editUser.modal('hide')
 
         } else if (password.val().length < 8) {
             editError.show().text("password should be 8 chars or more")
@@ -45,16 +47,11 @@ $(document).ready(function () {
 
         } else {
             editError.hide()
-            if (avatarSelect.val()) {
-                profilePic = avatarSelect.val().split("\\")
-                profilePic = profilePic[profilePic.length - 1].split('.');
-                profilePic = profilePic[profilePic.length - 1]
-                profilePic = editButton.attr('username') + '.' + profilePic
-            }
+
             let data = {
                 username: editButton.attr('username'),
                 password: password.val(),
-                profilePic: profilePic
+                profilePic: ''
             }
             socket.emit('updateUser', data)
 
@@ -114,6 +111,7 @@ $(document).ready(function () {
         notif.classList.add('alert', 'text-center', 'notification', 'show')
         if (data[0]) {
             notif.classList.add('alert-success')
+            avatarImg.prop('src', 'uploads/' + data[2])
         } else {
             notif.classList.add('alert-warning')
         }

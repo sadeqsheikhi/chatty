@@ -19,7 +19,7 @@ activeUsers = []
 // express setup
 // =====================================================================================================================
 app.set('view engine', 'ejs');
-
+app.use(siofu.router)
 app.use(express.static('public'))
 
 // beware to never get this secret key to anyone
@@ -70,6 +70,11 @@ io.of('/').use(sharedsession(session, {
 
 // when a connection is created
 io.on('connection', (socket) => {
+
+    // for uploading files
+    var uploader = new siofu()
+    uploader.dir = "public/uploads"
+    uploader.listen(socket)
 
     socket.on('login', async (data) => {
         let res = await db().sequelize.models.User.login(data.username, data.password)
