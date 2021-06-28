@@ -21,7 +21,7 @@ module.exports = async (username, password,) => {
 
         if (newUser === null) {
             bcrypt.hash(password, 10, async (err, hash) => {
-                await db().sequelize.models.User.create({userName: username , password: hash })
+                await db().sequelize.models.User.create({userName: username, password: hash})
                     .then(result => {
                         console.log(result)
                     });

@@ -1,17 +1,18 @@
 (function () {
-    let socket = io.connect('http://localhost:3000')
+    let socket = io.connect()
 
     const username = $('#username')
     const password = $('#password')
     const passwordRep = $('#password-repeat')
     const signupButton = $('#signup')
     const errorBox = $('#error-box')
+
+    let allowSignup = true; // preventing multiple signups
     errorBox.hide()
-    let allowSignup = true;
 
     signupButton.on('click', () => {
         // check for emptiness
-        if (isEmpty(username) || isEmpty(password) || isEmpty(passwordRep)) {
+        if (username.val() === '' || passwordRep.val() === '' || passwordRep.val() === '') {
             errorBox.show()
             errorBox.text('No field can be empty')
         }
@@ -33,30 +34,27 @@
             errorBox.hide()
             if (allowSignup) {
                 socket.emit('signup', {username: username.val(), password: password.val()})
+                allowSignup = false
             }
         }
 
     })
 
+
+    // ===================== listening for signup response
     socket.on('signupRes', data => {
         if (data[0]) {
             $('body').prepend(
-                `
-    <div class="alert text-center alert-success show" role="alert" style="position: fixed; top: 3%; left: 50%; transform: translateX(-50%)">
-        ${data[1]}
-    </div>
-                `
+                `<div class="text-center alert-success notification show" role="alert">
+                    ${data[1]}
+                </div>`
             )
-            setTimeout(() => {
-                window.location.replace('http://localhost:3000/login');
-            }, 400)
+            setTimeout(() => { window.location.replace('/login') }, 400)
+
         } else {
             errorBox.show()
+            allowSignup = true
             errorBox.text(data[1])
         }
     })
 })()
-
-function isEmpty(formEl) {
-    return formEl.val() === ''
-}

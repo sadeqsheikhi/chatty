@@ -17,7 +17,20 @@ exports.User = class User extends Model {
         const createUser = require('./add')
         return await createUser(args.username, args.password)
     }
-    //
+
+    // update User
+    static async update(args) {
+        const updateUsr = require('./update')
+        return await updateUsr(args.username, args.password, args.profilePic)
+    }
+
+    // // get user info
+    // static async getUsers(username) {
+    //     const getter = require('./get')
+    //     return await getter(username)
+    // }
+
+
     // // delete User
     // static async delete(args) {
     //     const deleteUsr = require('./delete')
@@ -28,18 +41,6 @@ exports.User = class User extends Model {
     // static async show(args) {
     //     const showUsr = require('./show')
     //     return await showUsr(args.id)
-    // }
-    //
-    // update User
-    static async update(args) {
-        const updateUsr = require('./update')
-        return await updateUsr(args.username, args.password, args.profilePic)
-    }
-    //
-    // // get user info
-    // static async getUsers(username) {
-    //     const getter = require('./get')
-    //     return await getter(username)
     // }
 }
 

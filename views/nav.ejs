@@ -1,0 +1,25 @@
+<nav class="navbar navbar-dark navbar-expand-md" id="app-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#"></a>
+        <button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1">
+            <span class="sr-only">
+                Toggle navigation
+            </span>
+            <span class="navbar-toggler-icon"></span></button>
+        <img src="img/logo.png" style="width: 70px;">
+        <span
+                style="color: rgb(255,255,255);font-family: 'Montserrat Alternates', sans-serif;font-size: 26px;margin-left: 10px;font-weight: bold;">Chatty</span>
+        <div class="collapse navbar-collapse" id="navcol-1">
+            <ul class="nav navbar-nav ml-auto">
+                <li class="nav-item" role="presentation"></li>
+                <li class="nav-item" type="button" role="presentation" data-toggle="modal" data-target="#editUser">
+                    <a class="nav-link" href="#"
+                       style="color: white;opacity: 1;margin-right: 10px;border-right: 2px solid white;padding-right: 13px;">
+                        <%= username %>
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation" id="logout"><a class="nav-link" href="#">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

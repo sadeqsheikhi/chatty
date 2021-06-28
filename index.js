@@ -1,39 +1,46 @@
 const express = require('express')
-const app = express()
-const db = require('./models/Db')
+const db = require('./models/Db')()
 const http = require('http')
-const siofu = require('socketio-file-upload')
+const Siofu = require('socketio-file-upload')
+const sharedSession = require("express-socket.io-session");
+const ioListener = require('./controller/ioListener')
+
+// SETTING UP SESSIONS
 const session = require('express-session')({
+    // beware to never get this secret key to anyone
     secret: "hyttrqerufyuv324jfgdhf9834", resave: true, saveUninitialized: true
 })
-sharedsession = require("express-socket.io-session");
 
-db().init().catch(res => {
+// CREATING DATABASE
+db.init().catch(res => {
     console.log('database creation' + res)
 })
 
-// storing currently active users
-activeUsers = []
-
-// =====================================================================================================================
+// ============================================================================
 // express setup
-// =====================================================================================================================
+// ============================================================================
+const app = express()
 app.set('view engine', 'ejs');
-app.use(siofu.router)
-app.use(express.static('public'))
-
-// beware to never get this secret key to anyone
+app.use(Siofu.router)
 app.use(session)
 
+// static dir
+app.use(express.static('public'))
+
+
+// ========== ROUTING
 app.get('/', (req, res) => {
     if (!req.session.user) {
         return res.status(401).redirect('login')
     }
-    return res.render('index', {username: req.session.user.userName})
+    return res.render('index', {username: req.session.user.userName, profilePic: req.session.user.profilePic})
 })
+
+
 app.get('/signup', (req, res) => {
     res.render('signup')
 })
+
 
 app.get('/login', (req, res) => {
     console.log(req.session)
@@ -43,6 +50,7 @@ app.get('/login', (req, res) => {
         res.render('login')
 })
 
+
 app.get('/logout', (req, res) => {
     console.log('logging out')
     console.log(req.session.id)
@@ -50,66 +58,37 @@ app.get('/logout', (req, res) => {
         delete req.session.user
     res.redirect('login')
 })
+
+// ========= CREATING SERVER
 server = http.createServer(app);
 server.listen(3000, () => {
     console.log('listening on port 3000')
 })
-// =====================================================================================================================
+
+
+
+// ====================================================================
 // socket.io setup
-// =====================================================================================================================
+// ====================================================================
 const io = require('socket.io')(server)
 
-// saving shared-session on every change
-io.use(sharedsession(session, {
+// sharing session between express and socket.io
+io.use(sharedSession(session, {
     autoSave: true
 }));
 
-io.of('/').use(sharedsession(session, {
+io.of('/').use(sharedSession(session, {
     autoSave: true
 }));
 
-// when a connection is created
+// ============ WHEN CONNECTION IS MADE
 io.on('connection', (socket) => {
 
-    // for uploading files
-    var uploader = new siofu()
+    // Listener for uploading files
+    let uploader = new Siofu()
     uploader.dir = "public/uploads"
     uploader.listen(socket)
 
-    socket.on('login', async (data) => {
-        let res = await db().sequelize.models.User.login(data.username, data.password)
-        if (res[1].id) {
-            socket.handshake.session.user = res[1]
-            socket.handshake.session.save()
-        }
-        socket.emit('loginRes',res)
-    })
-
-    // listen for changing password
-    socket.on('updateUser', async (data) => {
-        let res = await db().sequelize.models.User.update(data)
-        console.log('updating user', res)
-        socket.emit('updateUserRes', res)
-    })
-
-    // listen on new_message
-    socket.on('newMessage', (data) => {
-        console.log(data.message)
-        //broadcast the new message
-        io.sockets.emit('newMessage', {message: data.message, username: data.username});
-    })
-
-    // listen on typing
-    socket.on('typing', data => {
-        socket.broadcast.emit('typing', {username: data.username})
-    })
-
-    // listen on creating user
-    socket.on('signup', async (data) => {
-        let res = await db().sequelize.models.User.add({username: data.username, password: data.password})
-        socket.emit('signupRes', res)
-    })
-
-
-
+    ioListener(io, socket)
 })
+

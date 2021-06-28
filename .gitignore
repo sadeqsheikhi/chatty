@@ -2,3 +2,4 @@
 node_modules/
 untracked/
 chatty.sqlite
+public/uploads

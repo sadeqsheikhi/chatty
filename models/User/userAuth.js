@@ -33,6 +33,7 @@ module.exports = {
                 return [true, {
                     id: user.dataValues.id,
                     userName: user.dataValues.userName,
+                    profilePic: user.dataValues.profilePic,
                 }]
             } else {
                 msg = 'incorrect password'
@@ -50,25 +51,6 @@ module.exports = {
                 error: msg
             }]
         }
-    },
-
-    // ==================================================================================
-    // Checks For Existence Of User Type
-    /**
-     * check if the given userType exists
-     * in the DB or not
-     * @param input_usertype
-     * @returns {Promise<boolean>}
-     */
-    async userTypeExists(input_usertype) {
-        log.record('info', message.reqUserTypeExists)
-        let user = await db().sequelize.models.User.findOne({
-            where: {
-                userType: input_usertype
-            }
-        })
-
-        return user !== null;
     }
 } // end of UserAuthenticator
 
@@ -78,7 +60,6 @@ module.exports = {
  * check if the given username exists
  * in the DB or not
  * @param input_username
- * @returns {Promise<Model<TModelAttributes, TCreationAttributes>|null>}
  */
 async function usernameExists(input_username) {
     return await db().sequelize.models.User.findOne({

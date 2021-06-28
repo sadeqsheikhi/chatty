@@ -1,10 +1,10 @@
 $(document).ready(function () {
+
     let message = $('#message')
     let sendMessage = $('#send-message')
     let chatBox = $('.msg_card_body')
     let isTyping = $('#is-typing')
     let logout = $('#logout')
-
     let password = $('#change-password');
     let passwordRep = $('#change-password-rep');
     let editButton = $('#editButton')
@@ -13,8 +13,9 @@ $(document).ready(function () {
     let avatarSelect = $('#avatar-select')
     let editUser = $('#editUser')
 
-    let socket = io.connect('http://localhost:3000')
+    let socket = io.connect()
 
+    // ==========================  setting up uploader for profile photo
     let uploader = new SocketIOFileUpload(socket);
     uploader.listenOnInput(document.getElementById('avatar-select'))
     uploader.addEventListener('complete', (e) => {
@@ -27,23 +28,20 @@ $(document).ready(function () {
     })
 
 
-    avatarImg.click(function () {
+    // ========================== change passowrd
+    editError.hide()
+    avatarImg.click(() => {
         avatarSelect.click()
     })
-    editError.hide()
-
     editButton.click(function () {
-        let profilePic;
         if (password.val() === '' || (passwordRep.val() === '' && password.val() === '')) {
             editUser.modal('hide')
 
         } else if (password.val().length < 8) {
             editError.show().text("password should be 8 chars or more")
 
-
         } else if (password.val() !== passwordRep.val()) {
             editError.show().text("password and password repeat don't match")
-
 
         } else {
             editError.hide()
@@ -54,12 +52,32 @@ $(document).ready(function () {
                 profilePic: ''
             }
             socket.emit('updateUser', data)
-
         }
     })
 
+    // ==========================  listening for user update response
+    socket.on('updateUserRes', data => {
+        let notif = document.createElement('div')
+        notif.classList.add('text-center', 'notification', 'show')
+        if (data[0]) {
+            notif.classList.add('alert-success')
+            avatarImg.prop('src', 'uploads/' + data[2])
+        } else {
+            notif.classList.add('alert-warning')
+        }
+
+        notif.innerHTML = `${data[1]}`
+        $('body').prepend(notif)
+
+        // remove notification
+        setTimeout(() => {
+            notif.remove()
+        }, 3000)
+    })
+
+    // ================================   logout
     logout.click(function () {
-        window.location.replace('http://localhost:3000/logout')
+        window.location.replace('/logout')
     })
 
 
@@ -103,30 +121,4 @@ $(document).ready(function () {
             isTyping.html('')
         }, 800)
     })
-
-
-    // listening for user update
-    socket.on('updateUserRes', data => {
-        let notif = document.createElement('div')
-        notif.classList.add('alert', 'text-center', 'notification', 'show')
-        if (data[0]) {
-            notif.classList.add('alert-success')
-            avatarImg.prop('src', 'uploads/' + data[2])
-        } else {
-            notif.classList.add('alert-warning')
-        }
-        notif.setAttribute('role', 'alert')
-        notif.style.zIndex = '34343'
-        notif.innerHTML = `
-            ${data[1]}
-            `
-        $('body').prepend(notif)
-        // remove notification
-        setTimeout(() => {
-            notif.remove()
-        }, 3000)
-
-    })
-
-
 });

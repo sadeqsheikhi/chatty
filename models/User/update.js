@@ -8,10 +8,11 @@ const bcrypt = require('bcrypt')
  * update attributes that user has changed in DB
  * @param username
  * @param password
+ * @param profilePic
  * @returns {Promise<(boolean)[]|(String|*)[]>}
  */
 module.exports = async (username, password, profilePic) => {
-    
+
     try {
         // count number of element that changed 
         let check = null
@@ -24,7 +25,7 @@ module.exports = async (username, password, profilePic) => {
         })
 
         // Don't update if user with new username exist
-        if (user.userName != username){
+        if (user.userName !== username) {
             check = await db().sequelize.models.User.findOne({
                 where: {
                     userName: username
@@ -33,10 +34,10 @@ module.exports = async (username, password, profilePic) => {
         }
 
         // if username already exists updated with new value
-        if (check === null){
+        if (check === null) {
             let pass
             if (!profilePic) {
-                bcrypt.hash(password, 10,  async (err, hash) => {
+                bcrypt.hash(password, 10, async (err, hash) => {
                     pass = hash
                     await user.update({userName: username, password: pass})
                 })
@@ -55,7 +56,7 @@ module.exports = async (username, password, profilePic) => {
             console.log(msg)
             return [false, msg]
         }
-        
+
     } catch (err) {
         const msg = 'error in updating user'
         console.log(msg)
