@@ -26,4 +26,8 @@ module.exports = (io, socket) => {
         console.log('updating user', res)
         socket.emit('updateUserRes', res)
     })
+
+    socket.on('reqUserInfo', async (data) => {
+        socket.emit('resUserInfo', socket.handshake.session.user)
+    })
 }

@@ -5,7 +5,7 @@ $(document).ready(function () {
     let chatBox = $('.msg_card_body')
     let isTyping = $('#is-typing')
     let logout = $('#logout')
-    let password = $('#change-password');
+    let passwordField = $('#change-password');
     let passwordRep = $('#change-password-rep');
     let editButton = $('#editButton')
     let editError = $('#edit-errorBox')
@@ -14,6 +14,16 @@ $(document).ready(function () {
     let editUser = $('#editUser')
 
     let socket = io.connect()
+    let username, profilePic
+    // getting username and profilePicture of currentUser
+    socket.emit('reqUserInfo')
+
+    socket.on('resUserInfo', data => {
+        username = data.userName
+        profilePic = data.profilePic
+        alert(profilePic)
+    })
+
 
     // ==========================  setting up uploader for profile photo
     let uploader = new SocketIOFileUpload(socket);
@@ -34,13 +44,13 @@ $(document).ready(function () {
         avatarSelect.click()
     })
     editButton.click(function () {
-        if (password.val() === '' || (passwordRep.val() === '' && password.val() === '')) {
+        if (passwordField.val() === '' || (passwordRep.val() === '' && passwordField.val() === '')) {
             editUser.modal('hide')
 
-        } else if (password.val().length < 8) {
+        } else if (passwordField.val().length < 8) {
             editError.show().text("password should be 8 chars or more")
 
-        } else if (password.val() !== passwordRep.val()) {
+        } else if (passwordField.val() !== passwordRep.val()) {
             editError.show().text("password and password repeat don't match")
 
         } else {
@@ -48,7 +58,7 @@ $(document).ready(function () {
 
             let data = {
                 username: editButton.attr('username'),
-                password: password.val(),
+                password: passwordField.val(),
                 profilePic: ''
             }
             socket.emit('updateUser', data)
@@ -61,7 +71,8 @@ $(document).ready(function () {
         notif.classList.add('text-center', 'notification', 'show')
         if (data[0]) {
             notif.classList.add('alert-success')
-            avatarImg.prop('src', 'uploads/' + data[2])
+            updateImages(data[2])
+            profilePic = data[2]
         } else {
             notif.classList.add('alert-warning')
         }
@@ -121,4 +132,16 @@ $(document).ready(function () {
             isTyping.html('')
         }, 800)
     })
+
+    function updateImages(newImage) {
+        let images = document.getElementsByTagName("img")
+        images = [...images]
+        images.forEach( image => {
+            let src = image.getAttribute('src')
+            if (src.includes(profilePic)) {
+                image.setAttribute('src', `uploads/${newImage}`)
+            }
+        })
+    }
 });
+
