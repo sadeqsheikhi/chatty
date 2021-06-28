@@ -48,7 +48,7 @@ footer {
     align-items: center;
     justify-content: center;
     background: rgb(2, 0, 36);
-    height: 160px;
+    min-height: 160px;
 }
 
 footer a {
@@ -61,6 +61,41 @@ footer a {
     color: #405a4e;
 }
 
+*::-webkit-scrollbar {
+    width: 10px;
+    border-radius: 100%;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #a8c38f;
+    outline: none;
+    border-radius: 200px;
+
+}
+
+#logotext {
+    display: none;
+}
+
+.chat-container {
+    padding-top: 30px;
+    height: initial;
+    flex-direction: column-reverse;
+}
+
+.chat-container .chat .card {
+    height: 85vh;
+    margin-bottom: 30px;
+}
+@media (min-width: 768px) {
+    #logotext {
+        display: initial;
+    }
+    .chat-container {
+        height: 100% !important;
+        flex-direction: row;
+    }
+}
 /* ======================================================= CHAT STYLING ==============================================*/
 /* ======================================================= CHAT STYLING ==============================================*/
 
