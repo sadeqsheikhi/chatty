@@ -12,7 +12,6 @@ $(document).ready(function () {
     let avatarImg = $('#avatar-img')
     let avatarSelect = $('#avatar-select')
     let editUser = $('#editUser')
-    let today = new Date()
 
     let socket = io.connect()
     let username, profilePic
@@ -108,6 +107,7 @@ $(document).ready(function () {
     // ========================== sending message
     sendMessage.click(function () {
         if (messageField.val()) {
+            let today = new Date()
             let time = `${today.getHours()}:${today.getMinutes()}`
             socket.emit('newMessage', {
                 message: messageField.val(),
