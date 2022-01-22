@@ -42,7 +42,8 @@ module.exports = (io, socket) => {
         socket.emit('updateUserRes', res)
     })
 
-    socket.on('reqUserInfo', async (data) => {
+
+    socket.on('reqUserInfo', async () => {
         socket.emit('resUserInfo', socket.handshake.session.user)
     })
 

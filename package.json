@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon app"
   },
-  "author": "Sadeq Sheikhi",
+  "author": "Sadeq Sheikhi - Parisa Yousefi",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",

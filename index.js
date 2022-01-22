@@ -1,7 +1,10 @@
 const express = require('express')
 const db = require('./models/Db')()
 const http = require('http')
+
+// for file upload over socket
 const Siofu = require('socketio-file-upload')
+
 const sharedSession = require("express-socket.io-session");
 const ioListener = require('./controller/ioListener')
 
